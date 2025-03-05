@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1174827174906170114}
   - component: {fileID: -5219484132932492854}
   - component: {fileID: 4618602540636239030}
+  - component: {fileID: 2605291363338333235}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Untagged
@@ -148,3 +149,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blastRadius: 10
   explosionForse: 50
+--- !u!114 &2605291363338333235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6654333372832073880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7dacdd1674c74d0ba9f04ef47516a20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletDecal: {fileID: 4072072367343185234, guid: cc6b91e4852f64667b2904c67f8cf91f,
+    type: 3}
