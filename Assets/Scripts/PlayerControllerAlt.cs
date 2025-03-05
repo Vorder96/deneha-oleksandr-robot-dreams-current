@@ -58,35 +58,38 @@ public class PlayerControllerAlt : MonoBehaviour
     private void ShootGun()
     {
         RaycastHit hit;
-        GameObject bullet = GameObject.Instantiate(bulletPrefab, barrelTransform.position, Quaternion.identity, bulletParent);
-        BulletController bulletController = bullet.GetComponent<BulletController>();
-        if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
+        Vector3 targetPoint;
+        bool hasHit = Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 100f); 
+
+        if (hasHit)
         {
-            bulletController.target = hit.point;
-            bulletController.hit = true;
+            targetPoint = hit.point;
         }
         else
         {
-            bulletController.target = cameraTransform.position + cameraTransform.forward * bulletHitMissDistance;
-            bulletController.hit = false;
+            targetPoint = cameraTransform.position + cameraTransform.forward * bulletHitMissDistance;
         }
+
+        GameObject bullet = Instantiate(bulletPrefab, barrelTransform.position, Quaternion.identity, bulletParent);
+        BulletController bulletController = bullet.GetComponent<BulletController>();
+        bulletController.target = targetPoint;
+        bulletController.hit = hasHit;
     }
+
 
     void Update()
     {
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
-            playerVelocity.y = 0f;
+            playerVelocity.y = -2f;
         }
 
         Vector2 input = moveAction.ReadValue<Vector2>(); 
-        Vector3 move = new Vector3(input.x, 0, input.y);
-        move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
+        Vector3 move = input.x * cameraTransform.right + input.y * cameraTransform.forward;
         move.y = 0f;
-        controller.Move(move * Time.deltaTime * playerSpeed);
-
-        // Makes the player jump
+        controller.Move(move.normalized * Time.deltaTime * playerSpeed);
+        
         if (jumpAction.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
