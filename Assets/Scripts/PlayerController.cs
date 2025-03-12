@@ -28,7 +28,7 @@ namespace Lesson7
 
         private void MoveHandler(Vector2 moveInput)
         {
-            _moveInput = moveInput;//.normalized;
+            _moveInput = moveInput;
         }
     }
 }

@@ -9,13 +9,11 @@ public class Fire : MonoBehaviour
     private Transform myTransform;
 
     public float propulsionForce;
-    // Start is called before the first frame update
     void Start()
     {
         SetInitialReferences();
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
         if (Input.GetButtonDown("Fire1"))

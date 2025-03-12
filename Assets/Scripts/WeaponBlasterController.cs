@@ -16,8 +16,8 @@ public class WeaponBlasterController : MonoBehaviour
     public GameObject defaultHitEffectPrefab;
     public GameObject enemyHitEffectPrefab;
 
-    public Transform rotationBase; // Gun (той, що має рухатись вгору-вниз)
-    public Transform cameraTransform; // Сама камера
+    public Transform rotationBase;
+    public Transform cameraTransform;
 
     void Update()
     {
@@ -30,17 +30,14 @@ public class WeaponBlasterController : MonoBehaviour
     void HandleWeaponVerticalRotation()
     {
         if (rotationBase == null || cameraTransform == null) return;
-
-        // Отримуємо напрямок прицілювання від камери
+        
         Vector3 targetDirection = cameraTransform.forward;
-
-        // Повертаємо Gun так, щоб він дивився в тому ж напрямку (тільки по вертикалі)
+        
         Quaternion lookRotation = Quaternion.LookRotation(targetDirection);
         float pitch = lookRotation.eulerAngles.x;
 
-        if (pitch > 180f) pitch -= 360f; // нормалізація кута
-
-        // Обертаємо Gun лише по X
+        if (pitch > 180f) pitch -= 360f;
+        
         rotationBase.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
@@ -54,11 +51,21 @@ public class WeaponBlasterController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, laserRange))
         {
             targetPoint = hit.point;
-
+            
             if (hit.collider.CompareTag("Enemy"))
+            {
+                DummyController dummy = hit.collider.GetComponent<DummyController>();
+                if (dummy != null)
+                {
+                    dummy.ShowHitEffect(hit.point, hit.normal);
+                }
+
                 StartCoroutine(ShowHitEffect(hit.point, hit.normal, enemyHitEffectPrefab));
+            }
             else
+            {
                 StartCoroutine(ShowHitEffect(hit.point, hit.normal, defaultHitEffectPrefab));
+            }
 
             StartCoroutine(ShowLaser(hit.point));
         }

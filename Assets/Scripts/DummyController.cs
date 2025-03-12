@@ -5,35 +5,44 @@ public class DummyController : MonoBehaviour, IHitEffect
 {
     public float maxHP = 100f;
     private float currentHP;
-
     public GameObject customHitEffectPrefab;
-    public Slider hpSlider; // Прив’яжи сюди слайдер із Canvas
+    public Image healthBar;
+    public float damageAmount = 10f;
+    public ScoreManager scoreManager;
+    public GameObject headObject; 
 
     void Start()
     {
         currentHP = maxHP;
-        UpdateHPUI();
+        UpdateHealthBar();
+        if (scoreManager == null)
+        {
+            scoreManager = FindObjectOfType<ScoreManager>();
+        }
+
+        if (headObject == null)
+        {
+            headObject = transform.Find("Head")?.gameObject;
+        }
     }
 
     public void TakeDamage(float amount)
     {
         currentHP -= amount;
         if (currentHP < 0) currentHP = 0;
-
-        UpdateHPUI();
+        UpdateHealthBar();
 
         if (currentHP <= 0)
         {
-            // Додатково: смерть, зникнення і т.д.
             Destroy(gameObject);
         }
     }
 
-    void UpdateHPUI()
+    void UpdateHealthBar()
     {
-        if (hpSlider != null)
+        if (healthBar != null)
         {
-            hpSlider.value = currentHP / maxHP;
+            healthBar.fillAmount = currentHP / maxHP;
         }
     }
 
@@ -45,6 +54,42 @@ public class DummyController : MonoBehaviour, IHitEffect
             Destroy(effect, 0.5f);
         }
 
-        TakeDamage(10f); // Умовно — 10 одиниць за постріл
+        bool isHeadshot = IsHeadshot(hitPoint);
+
+        if (isHeadshot)
+        {
+            TakeDamage(damageAmount * 2f);
+
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(40);
+            }
+        }
+        else
+        {
+            TakeDamage(damageAmount);
+
+            if (scoreManager != null)
+            {
+                scoreManager.AddScore(20);
+            }
+        }
+    }
+
+    bool IsHeadshot(Vector3 hitPoint)
+    {
+        if (headObject != null)
+        {
+            Collider headCollider = headObject.GetComponent<Collider>();
+            if (headCollider != null)
+            {
+                if (headCollider.bounds.Contains(hitPoint))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
