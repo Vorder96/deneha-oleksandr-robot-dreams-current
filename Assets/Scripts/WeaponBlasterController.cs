@@ -16,10 +16,32 @@ public class WeaponBlasterController : MonoBehaviour
     public GameObject defaultHitEffectPrefab;
     public GameObject enemyHitEffectPrefab;
 
+    public Transform rotationBase; // Gun (той, що має рухатись вгору-вниз)
+    public Transform cameraTransform; // Сама камера
+
     void Update()
     {
+        HandleWeaponVerticalRotation();
+
         if (Input.GetMouseButtonDown(0))
             ShootLaser();
+    }
+
+    void HandleWeaponVerticalRotation()
+    {
+        if (rotationBase == null || cameraTransform == null) return;
+
+        // Отримуємо напрямок прицілювання від камери
+        Vector3 targetDirection = cameraTransform.forward;
+
+        // Повертаємо Gun так, щоб він дивився в тому ж напрямку (тільки по вертикалі)
+        Quaternion lookRotation = Quaternion.LookRotation(targetDirection);
+        float pitch = lookRotation.eulerAngles.x;
+
+        if (pitch > 180f) pitch -= 360f; // нормалізація кута
+
+        // Обертаємо Gun лише по X
+        rotationBase.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
     void ShootLaser()

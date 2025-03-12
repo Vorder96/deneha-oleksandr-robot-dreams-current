@@ -41,23 +41,19 @@ public class PlayerControllerAlt : MonoBehaviour
             playerVelocity.y = -2f;
         }
 
-        // Переміщення
         Vector2 input = moveAction.ReadValue<Vector2>(); 
         Vector3 move = input.x * cameraTransform.right + input.y * cameraTransform.forward;
         move.y = 0f;
         controller.Move(move.normalized * Time.deltaTime * playerSpeed);
         
-        // Стрибок
         if (jumpAction.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
         }
 
-        // Гравітація
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
         
-        // Поворот
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
