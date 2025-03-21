@@ -18,37 +18,21 @@ public class Grenade : MonoBehaviour
         onExplode.Invoke();
 
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, explosionRadius, enemyMask);
-
         foreach (var hitCollider in hitColliders)
         {
-            Vector3 directionToEnemy = (hitCollider.transform.position - transform.position).normalized;
-            RaycastHit hit;
-
-            if (Physics.Raycast(transform.position, directionToEnemy, out hit, explosionRadius, obstacleLayer))
+            if (!Physics.Raycast(transform.position, (hitCollider.transform.position - transform.position).normalized, explosionRadius, obstacleLayer))
             {
-                Debug.Log("ПЕРЕШКОДА МІШАЄ ЛУЧУ :(");
-                continue;
-            }
-
-            if (hit.collider.gameObject == hitCollider.gameObject)
-            {
-                Debug.Log("Ворог поразка: " + hitCollider.gameObject.name);
                 onEnemyHit.Invoke(hitCollider.gameObject);
-            }
-
-            Rigidbody enemyRigidbody = hitCollider.GetComponent<Rigidbody>();
-            if (enemyRigidbody != null)
-            {
-                enemyRigidbody.AddExplosionForce(explosionForce, transform.position, explosionRadius);
+                hitCollider.GetComponent<Rigidbody>()?.AddExplosionForce(explosionForce, transform.position, explosionRadius);
             }
         }
 
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, 0.1f);
     }
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.blue;
+        Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
 }
