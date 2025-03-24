@@ -187,10 +187,6 @@ MonoBehaviour:
   jumpHeight: 1
   gravityValue: -9.81
   rotationSpeed: 9
-  bulletPrefab: {fileID: 0}
-  barrelTransform: {fileID: 0}
-  bulletParent: {fileID: 0}
-  bulletHitMissDistance: 25
 --- !u!114 &25477770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,7 +215,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: DefaultScheme
-  m_DefaultActionMap: 84320b64-5781-4dc8-add2-c4cf80490f5d
+  m_DefaultActionMap: PlayerFree
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!143 &25477771 stripped
@@ -13959,7 +13955,7 @@ Transform:
   m_GameObject: {fileID: 815414318}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17682709, y: 0, z: 0, w: 0.98424196}
-  m_LocalPosition: {x: 62.217, y: 14.069, z: 104.218}
+  m_LocalPosition: {x: 61.945114, y: 14.069, z: 104.218}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -28823,7 +28819,7 @@ PrefabInstance:
     - target: {fileID: 4056239322504422730, guid: 43c1f91dcb2404d3c9db534b400361aa,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 62.217
+      value: 61.945114
       objectReference: {fileID: 0}
     - target: {fileID: 4056239322504422730, guid: 43c1f91dcb2404d3c9db534b400361aa,
         type: 3}

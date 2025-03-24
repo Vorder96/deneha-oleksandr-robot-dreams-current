@@ -7,33 +7,43 @@ namespace Lesson7
     {
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private float _speed;
-        [SerializeField] private PlayerInputActions _playerInputActions;
+        [SerializeField] private GrenadeThrower _grenadeThrower; // Додаємо поле для кидка гранати
 
+        private PlayerInput _playerInput;
         private Transform _transform;
         private Vector2 _moveInput;
 
-        private InputAction _moveAction;
-
         private void Awake()
         {
-            _moveAction = _playerInputActions.Player.Move;
-            _moveAction.performed += ctx => _moveInput = ctx.ReadValue<Vector2>();
-            _moveAction.canceled += ctx => _moveInput = Vector2.zero;
+            _playerInput = GetComponent<PlayerInput>();
         }
 
         private void OnEnable()
         {
-            _moveAction.Enable();
+            _playerInput.actions.Enable();
         }
 
         private void OnDisable()
         {
-            _moveAction.Disable();
+            _playerInput.actions.Disable();
         }
 
         private void Start()
         {
             _transform = transform;
+        }
+
+        public void OnMove(InputValue value)
+        {
+            _moveInput = value.Get<Vector2>();
+        }
+
+        public void OnPrimary(InputValue value)
+        {
+            if (value.isPressed && _grenadeThrower != null)
+            {
+                _grenadeThrower.ThrowGrenade();
+            }
         }
 
         private void FixedUpdate()

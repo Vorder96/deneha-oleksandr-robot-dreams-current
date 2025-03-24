@@ -6,26 +6,17 @@ public class GrenadeThrower : MonoBehaviour
     public GameObject grenadePrefab;
     public Transform throwPoint;
     public float throwForce = 2f;
-    public float grenadeLifetime = 3f;
 
-    private void Update()
+    public void ThrowGrenade()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            ThrowGrenade();
-        }
-    }
+        if (grenadePrefab == null || throwPoint == null) return;
 
-    void ThrowGrenade()
-    {
         GameObject grenade = Instantiate(grenadePrefab, throwPoint.position, throwPoint.rotation);
-        grenade.GetComponent<Rigidbody>().AddForce(throwPoint.forward * throwForce, ForceMode.VelocityChange);
-        StartCoroutine(ExplodeAfterDelay(grenade));
-    }
+        Rigidbody rb = grenade.GetComponent<Rigidbody>();
 
-    IEnumerator ExplodeAfterDelay(GameObject grenade)
-    {
-        yield return new WaitForSeconds(grenadeLifetime);
-        grenade.GetComponent<Grenade>().Explode();
+        if (rb != null)
+        {
+            rb.AddForce(throwPoint.forward * throwForce, ForceMode.VelocityChange);
+        }
     }
 }
