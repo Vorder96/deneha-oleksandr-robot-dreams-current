@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
 public class PlayerControllerAlt : MonoBehaviour
@@ -21,14 +22,17 @@ public class PlayerControllerAlt : MonoBehaviour
 
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction escapeAction;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         cameraTransform = Camera.main.transform;
+
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
+        escapeAction = playerInput.actions["Exit"];
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -45,7 +49,7 @@ public class PlayerControllerAlt : MonoBehaviour
         Vector3 move = input.x * cameraTransform.right + input.y * cameraTransform.forward;
         move.y = 0f;
         controller.Move(move.normalized * Time.deltaTime * playerSpeed);
-        
+
         if (jumpAction.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
@@ -53,8 +57,18 @@ public class PlayerControllerAlt : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
-        
+
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+        if (escapeAction.triggered)
+        {
+            GoToMainMenu();
+        }
+    }
+
+    private void GoToMainMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
