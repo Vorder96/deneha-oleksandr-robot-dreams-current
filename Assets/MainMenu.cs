@@ -3,11 +3,16 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
     public void PlayGame()
     {
-        if (SceneManager.GetActiveScene().name != "Lection8")
+        if (SceneManager.GetActiveScene().name != "Lesson14")
         {
-            SceneManager.LoadScene("Lection8");
+            SceneManager.LoadScene("Lesson14");
         }
     }
 

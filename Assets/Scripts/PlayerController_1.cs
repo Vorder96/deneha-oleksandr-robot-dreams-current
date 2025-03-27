@@ -1,9 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(CharacterController), typeof(PlayerInput))]
-public class PlayerControllerAlt : MonoBehaviour
+public class PlayerController_1 : MonoBehaviour
 {
     [SerializeField]
     private float playerSpeed = 2.0f;
@@ -22,28 +23,28 @@ public class PlayerControllerAlt : MonoBehaviour
     private Transform bulletParent;
     [SerializeField]
     private float bulletHitMissDistance = 25f;
+    
+    [SerializeField]
+    private LayerMask ignoreLayers;
 
     private CharacterController controller;
     private PlayerInput playerInput;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     private Transform cameraTransform;
-
+    
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction shootAction;
-    private InputAction escapeAction;
 
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         cameraTransform = Camera.main.transform;
-
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
         shootAction = playerInput.actions["Shoot"];
-        escapeAction = playerInput.actions["Exit"];
 
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -58,7 +59,36 @@ public class PlayerControllerAlt : MonoBehaviour
         shootAction.performed -= _ => ShootGun();
     }
 
-    private void Update()
+    private void ShootGun()
+    {
+        RaycastHit hit;
+        Vector3 targetPoint;
+        
+        bool hasHit = Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 100f, ~ignoreLayers);
+        
+        if (hasHit)
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = cameraTransform.position + cameraTransform.forward * bulletHitMissDistance;
+        }
+        
+        Vector3 spawnPosition = barrelTransform.position + barrelTransform.forward * 0.5f;
+        
+        GameObject bullet = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity, bulletParent);
+        Rigidbody rb = bullet.GetComponent<Rigidbody>();
+        BulletController bulletController = bullet.GetComponent<BulletController>();
+        bulletController.target = targetPoint;
+        bulletController.hit = hasHit;
+        
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.AddForce((targetPoint - spawnPosition).normalized * 5000f, ForceMode.Impulse);
+    }
+
+    void Update()
     {
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
@@ -70,7 +100,7 @@ public class PlayerControllerAlt : MonoBehaviour
         Vector3 move = input.x * cameraTransform.right + input.y * cameraTransform.forward;
         move.y = 0f;
         controller.Move(move.normalized * Time.deltaTime * playerSpeed);
-
+        
         if (jumpAction.triggered && groundedPlayer)
         {
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
@@ -78,39 +108,8 @@ public class PlayerControllerAlt : MonoBehaviour
 
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
-
+        
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
-        if (escapeAction.triggered)
-        {
-            GoToMainMenu();
-        }
-    }
-
-    private void ShootGun()
-    {
-        RaycastHit hit;
-        Vector3 targetPoint;
-        bool hasHit = Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 100f);
-
-        if (hasHit)
-        {
-            targetPoint = hit.point;
-        }
-        else
-        {
-            targetPoint = cameraTransform.position + cameraTransform.forward * bulletHitMissDistance;
-        }
-
-        GameObject bullet = Instantiate(bulletPrefab, barrelTransform.position, Quaternion.identity, bulletParent);
-        BulletController bulletController = bullet.GetComponent<BulletController>();
-        bulletController.target = targetPoint;
-        bulletController.hit = hasHit;
-    }
-
-    private void GoToMainMenu()
-    {
-        SceneManager.LoadScene("Menu");
     }
 }
